@@ -35,7 +35,6 @@ class GeneratePractitioner(generatebase.GenerateBase):
         # self._validate(Practitioner)
         self.response = self.post_resource(Practitioner)
         Practitioner.id = self._extract_id()
-        print(Practitioner.id)
         self.Practitioner = Practitioner
 
 if __name__ == '__main__':

@@ -19,8 +19,8 @@ import requests
 import json
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-import sys, os
-print(os.path.dirname(sys.executable))
+# import sys, os
+# print(os.path.dirname(sys.executable))
 
 class GeneratePatient(generatebase.GenerateBase):
     def __init__(self):
