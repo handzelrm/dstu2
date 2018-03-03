@@ -66,7 +66,7 @@ class GenerateFparLabs(generatebase.GenerateBase):
             lab_value = random.choice(lab_value_list)
             lab_name = random.choice(lab_name_list)
 
-        lab_dict = {'type':'valuestring','loinc':lab_loinc,'display':lab_name,'unit':None,'value':lab_value}
+        lab_dict = {'system':'http://loinc.org','type':'valuestring','code':lab_loinc,'display':lab_name,'unit':None,'value':lab_value}
         return lab_dict
 
 

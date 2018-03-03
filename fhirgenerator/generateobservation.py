@@ -82,30 +82,14 @@ class GenerateObservation(generatebase.GenerateBase):
 
         for obs,value in self.observation_dict.items():
             Observation = o.Observation()
-            CodeableConcept = cc.CodeableConcept()
-            Coding = c.Coding()
-            Coding.system = 'http://loinc.org'
-            Coding.code = value['loinc']
-            Coding.display = value['display']
 
-            CodeableConcept.coding = [Coding]
-            Observation.code = CodeableConcept
+            Observation.code = self._create_FHIRCodeableConcept(code=value['code'], system=value['system'], display=value['display'])
             Observation.status = 'final'
             Observation.subject = self._create_FHIRReference(self.Patient)
             Observation.performer = [self._create_FHIRReference(self.Practitioner)]
 
-
-            if value['type'] == 'quantity':
-                Observation = self._add_quantity_value(Observation,obs)
-            elif value['type'] == 'codeable':
-                Observation = self._add_codeable_value(Observation,obs)
-            elif value['type'] == 'valuestring':
-                Observation.valueString = value['value']
-            else:
-                raise ValueError('Measurement Type ValueError')
-
+            Observation = self._add_value(Observation,value)
             Observation.effectiveDateTime = self._create_FHIRDate(self.dt)
-
             # Observation.context = self._create_FHIRReference(self.Encounter)
 
             # self._validate(Observation)
@@ -115,6 +99,5 @@ class GenerateObservation(generatebase.GenerateBase):
 if __name__ == '__main__':
     obs_dict = generateobservationdict.GenerateObservationDict()
     obs = GenerateObservation(obs_dict.observation_dict,Patient=obs_dict.Patient)
-    # labs = generatefparlabs.GenerateFparLabs()
-
-    # GenerateObservation(labs.lab_dict,Patient=obs.Patient,Practitioner=obs.Practitioner,Encounter=obs.Encounter)
+    labs = generatefparlabs.GenerateFparLabs()
+    GenerateObservation(labs.lab_dict,Patient=obs.Patient,Practitioner=obs.Practitioner)
