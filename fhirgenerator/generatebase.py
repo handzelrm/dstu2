@@ -7,6 +7,7 @@ import fhirclient.models.quantity as q
 from fhirclient import client
 from fhirclient import server
 from fhirclient import auth
+from pytz import timezone
 import json
 import pandas as pd
 import numpy as np
@@ -90,8 +91,9 @@ class GenerateBase():
         :param date: datetime object used to set the date in the FHIRDate object
         :returns: FHIRDate object
         """
+        eastern = timezone('US/Eastern')
         FHIRDate = fd.FHIRDate()
-        FHIRDate.date = date
+        FHIRDate.date = date.astimezone(eastern)
         return FHIRDate
 
     def _create_FHIRPeriod(self,start=None,end=None):
@@ -267,6 +269,18 @@ class GenerateBase():
         Observation.valueCodeableConcept = CodeableConcept
         return Observation
 
+    def _add_value(self,Observation,measurement):
+        if measurement['type'] == 'quantity':
+            Observation.valueCodeableConcept = self._create_FHIRCodeableConcept(code=measurement['code'], system=measurement['system'], display=measurement['display'])
+        elif measurement['type'] == 'codeable':
+            Quantity = q.Quantity()
+            Quantity.value = self.observation_dict[measurement]['value']
+            Quantity.unit = self.observation_dict[measurement]['unit']
+            Observation.valueQuantity = Quantity
+        elif measurement['type'] == 'valuestring':
+            Observation.valueString = measurement['value']
+        return Observation
+
     @staticmethod
     def _generate_vitals():
         """Generates a set of vitals using a normal distribution times 10"""
@@ -311,12 +325,21 @@ class GenerateBase():
     @staticmethod
     def _get_smoking_loinc():
         """Uses a get request from LOINC to obtain a list of smoking statuses and returns a random one."""
-        df = pd.read_html('https://s.details.loinc.org/LOINC/72166-2.html?sections=Comprehensive')[5]
-        df.columns = df.iloc[3,:]
-        df = df.iloc[4:,[3,5]]
-        df.columns = ['description','loinc']
-        smoke_description = random.choice(df.description.tolist())
-        smoke_loinc = df[df.description==smoke_description].loinc.values[0]
+        # df = pd.read_html('https://s.details.loinc.org/LOINC/72166-2.html?sections=Comprehensive')[5]
+        # df.columns = df.iloc[3,:]
+        # df = df.iloc[4:,[3,5]]
+        # df.columns = ['description','loinc']
+        # smoke_description = random.choice(df.description.tolist())
+        # smoke_loinc = df[df.description==smoke_description].loinc.values[0]
+        # return smoke_loinc, smoke_description
+
+        df = pd.read_html('http://hl7.org/fhir/us/core/stu1/ValueSet-us-core-observation-ccdasmokingstatus.html')[1]
+        headers = df.iloc[0,:2].tolist()
+        df = df.iloc[1:,:2]
+        df.columns = headers
+        smoke_description = random.choice(df.Display.tolist())
+        smoke_loinc = df[df.Display==smoke_description].Code.values[0]
+
         return smoke_loinc, smoke_description
 
     def _get_household_income(self):
