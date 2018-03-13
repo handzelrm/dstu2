@@ -23,7 +23,11 @@ class GenerateBase():
     """Base class used to share common methods used within other generate classes"""
     @staticmethod
     def _generate_vitals():
-        """Generates a set of vitals using a normal distribution times 10"""
+        """
+        Generates a set of vitals using a normal distribution times 10
+
+        :returns: sbp, dbp, hr
+        """
         avg_sbp = 120
         avg_dbp  = 80
         diff = int(np.random.normal(0,1)*10)
@@ -37,7 +41,12 @@ class GenerateBase():
 
     @staticmethod
     def _generate_height_weight(sex):
-        """Generates height and weight roughly inline with US stats."""
+        """
+        Generates height and weight roughly inline with US stats.
+
+        :param sex: sex of person
+        :returns: height, weight
+        """
         avg_height_male = 69.2
         std_height_male = 4
         avg_height_female = 63.7
@@ -62,7 +71,11 @@ class GenerateBase():
 
     @staticmethod
     def _get_smoking_loinc():
-        """Uses a get request from LOINC to obtain a list of smoking statuses and returns a random one."""
+        """
+        Uses a get request from LOINC to obtain a list of smoking statuses and returns a random one.
+
+        :returns smoke_loinc, smoke_description
+        """
         df = pd.read_html('https://s.details.loinc.org/LOINC/72166-2.html?sections=Comprehensive')[5]
         df.columns = df.iloc[3,:]
         df = df.iloc[4:,[3,5]]
@@ -323,7 +336,11 @@ class GenerateBase():
 
     @staticmethod
     def _generate_vitals():
-        """Generates a set of vitals using a normal distribution times 10"""
+        """
+        Generates a set of vitals using a normal distribution times 10
+
+        :returns: sbp, dbp, hr
+        """
         avg_sbp = 120
         avg_dbp  = 80
         diff = int(np.random.normal(0,1)*10)
@@ -337,7 +354,11 @@ class GenerateBase():
 
     @staticmethod
     def _generate_height_weight(sex):
-        """Generates height and weight roughly inline with US stats."""
+        """
+        Generates a set of vitals using a normal distribution times 10
+
+        :returns: sbp, dbp, hr
+        """
         avg_height_male = 69.2
         std_height_male = 4
         avg_height_female = 63.7
@@ -362,7 +383,11 @@ class GenerateBase():
 
     @staticmethod
     def _get_smoking_loinc():
-        """Uses a get request from LOINC to obtain a list of smoking statuses and returns a random one."""
+        """
+        Uses a get request from LOINC to obtain a list of smoking statuses and returns a random one.
+
+        :returns: smoke_loinc, smoke_description
+        """        
         df = pd.read_html('http://hl7.org/fhir/us/core/stu1/ValueSet-us-core-observation-ccdasmokingstatus.html')[1]
         headers = df.iloc[0,:2].tolist()
         df = df.iloc[1:,:2]
