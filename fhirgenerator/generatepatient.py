@@ -1,6 +1,4 @@
-# from fhirgenerator
 import generatebase
-
 import fhirclient.models.address as a
 import fhirclient.models.codeableconcept as cc
 import fhirclient.models.coding as c
@@ -18,9 +16,6 @@ import os
 import requests
 import json
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
-
-# import sys, os
-# print(os.path.dirname(sys.executable))
 
 class GeneratePatient(generatebase.GenerateBase):
     def __init__(self):
@@ -44,11 +39,11 @@ class GeneratePatient(generatebase.GenerateBase):
         self.id = self._generate_patient_fhir_object()
 
     def __str__(self):
-        return f'Name:{self.name_last},{self.name_first}; id:{self.id}'
+        return f'{self.Patient.__class__.__name__}:{self.name_last},{self.name_first}; id: {self.Patient.id}'
 
     @staticmethod
     def __repr__():
-        return 'TestPatient()'
+        return 'GeneratePatient()'
 
     @staticmethod
     def _generate_patient_data():
@@ -169,9 +164,8 @@ class GeneratePatient(generatebase.GenerateBase):
         self._validate(Patient)
         self.response = self.post_resource(Patient)
         Patient.id = self._extract_id()
-        # print(f'Name:{self.name_last},{self.name_first}; id:{Patient.id}')
-        print(f'{Patient.__class__.__name__}:{self.name_last},{self.name_first}; id: {Patient.id}')
         self.Patient = Patient
+        print(self)
 
 if __name__ == '__main__':
     GeneratePatient()

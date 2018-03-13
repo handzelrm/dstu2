@@ -34,7 +34,14 @@ class GenerateOrganization(generatebase.GenerateBase):
         self.response = self.post_resource(Organization)
         Organization.id = self._extract_id()
         self.Organization = Organization
-        print(f'{Organization.__class__.__name__}:{self.organization_name}; id: {Organization.id}')
+        print(self)
+
+    def __str__(self):
+        return f'{self.Organization.__class__.__name__}:{self.organization_name}; id: {self.Organization.id}'
+
+    @staticmethod
+    def __repr__():
+        return 'GenerateOrganization()'
 
 if __name__ == '__main__':
     GenerateOrganization()

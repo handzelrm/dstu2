@@ -1,5 +1,4 @@
 import generatebase
-
 import fhirclient.models.codeableconcept as cc
 import fhirclient.models.coding as c
 import fhirclient.models.humanname as hn
@@ -7,7 +6,6 @@ import fhirclient.models.practitioner as pr
 import random
 import os
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
-
 
 class GeneratePractitioner(generatebase.GenerateBase):
     def __init__(self):
@@ -27,16 +25,23 @@ class GeneratePractitioner(generatebase.GenerateBase):
         PractitionerQualification.code = CodeableConcept
         Practitioner.qualification = [PractitionerQualification]
         name = hn.HumanName()
-        family, given, Practitioner.gender = self._generate_person()
-        name.family = [family]
-        name.given = [given]
+        self.family, self.given, Practitioner.gender = self._generate_person()
+        name.family = [self.family]
+        name.given = [self.given]
         Practitioner.name = name
 
         self._validate(Practitioner)
         self.response = self.post_resource(Practitioner)
         Practitioner.id = self._extract_id()
         self.Practitioner = Practitioner
-        print(f'{Practitioner.__class__.__name__}:{name.family[0]},{name.given[0][0]}; id: {Practitioner.id}')
+        print(self)
+
+    def __str__(self):
+        return f'{self.Practitioner.__class__.__name__}:{self.family},{self.given}; id: {self.Practitioner.id}'
+
+    @staticmethod
+    def __repr__():
+        return 'GeneratePractitioner()'
 
 if __name__ == '__main__':
 	GeneratePractitioner()

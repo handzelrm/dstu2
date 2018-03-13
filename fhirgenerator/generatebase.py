@@ -7,6 +7,7 @@ import fhirclient.models.quantity as q
 from fhirclient import client
 from fhirclient import server
 from fhirclient import auth
+
 from pytz import timezone
 import json
 import pandas as pd
@@ -49,7 +50,6 @@ class GenerateBase():
 
         if sex =='unknown':
             sex = random.choice(['male','female'])
-
         if sex == 'male':
             height = np.random.normal(avg_height_male,std_height_male)
             weight = np.random.normal(avg_weight_male,std_weight_male)
@@ -116,13 +116,26 @@ class GenerateBase():
 
 
     def _extract_id(self):
-        """Uses regex to parse out the id from the server response to posting. Current logic will not work with bundles."""
+        """
+        Uses regex to parse out the id from the server response to posting. Current logic will not work with bundles.
+
+        :param self:
+        :returns: resource id type string
+        """
         regex = re.compile(r'[a-z]\/(\d+)\/',re.IGNORECASE)
         id = regex.search(self.response['issue'][0]['diagnostics']).group(1)
         return id
 
     @staticmethod
     def _create_FHIRCoding(code, system=None, display=None):
+        """
+        Creates and returns a FHIRCoding object.
+
+        :param code: code from standard System
+        :param system: coding System
+        :param display: how the resource should be displayed
+        :returns: Coding FHIR object
+        """
         Coding = c.Coding()
         Coding.code = code
         Coding.system = system
@@ -130,40 +143,53 @@ class GenerateBase():
         return Coding
 
     def _create_FHIRCodeableConcept(self,code, system=None ,display=None):
+        """
+        Creates and returns a FHIRCodeableConcept object. References self._create_FHIRCoding()
+
+        :param self:
+        :param code: code from standard System
+        :param system: coding System
+        :param display: how the resource should be displayed
+        :returns: CodeableConcept FHIR object
+        """
         CodeableConcept = cc.CodeableConcept()
         Coding = self._create_FHIRCoding(code,system,display)
         CodeableConcept.coding = [Coding]
         return CodeableConcept
 
-    def _validate(self,resource):
-        # validate = self.connect2server().server.post_json(path=f'{resource.resource_type}/$validate',resource_json=resource.as_json())
-        # if validate.status_code != 200:
-        #     raise ValueError(f'Validation Error: {resource.resouce_type}')
-        # print(resource.resource_type)
+    @staticmethod
+    def _validate(resource):
+        """
+        Posts a request to hardcoded server to validate a resource. Will print errors/issues.
 
-        # resource = requests.get("http://api-v5-stu3.hspconsortium.org/handzelTest/open/Patient").content
-        # print(resource)
-        # resource = json.loads(resource)['entry'][0]['resource']
-        # print(resource)
-        # returned = requests.post(f'http://api-v5-stu3.hspconsortium.org/stu3/open/{resource["resourceType"]}/$validate', data=json.dumps(resource))
-        # print(returned.text)
-        # print(resource.resource_name)
-        # print(resource.as_json())
-
-        # returned = requests.post(f'https://api-v5-stu3.hspconsortium.org/stu3/open/{resource.resource_name}/$validate', data=json.dumps(resource.as_json()))
-        returned = requests.post(f'http://hapi.fhir.org/baseDstu2/{resource.resource_name}/$validate', data=json.dumps(resource.as_json()))
-        # returned = requests.post(f'https://api-v5-dstu2-test.hspconsortium.org/fpar2/open/{resource.resource_name}/$validate', data=json.dumps(resource.as_json()))
-        print(returned)
-        # print(type(returned))
+        :param resource: FHIR resource to be validated.
+        :returns: None
+        """
+        returned = requests.post(f'https://api-v5-dstu2-test.hspconsortium.org/fpar2/open/{resource.resource_name}/$validate', data=json.dumps(resource.as_json()))
+        """
+        Other Servers:
+            - https://api-v5-dstu2-test.hspconsortium.org/fpar2/open/
+            - http://hapi.fhir.org/baseDstu2/
+        """
         print(returned.text)
-        # print(returned.ok)
         print(resource.resource_name)
         for issue in returned.json()['issue']:
             print(issue['diagnostics'])
-        # print(returned.text)
 
-    def post_resource(self,resource):
-        response = requests.post(f'http://hapi.fhir.org/baseDstu2/{resource.resource_name}',data=json.dumps(resource.as_json()))
+    @staticmethod
+    def post_resource(resource):
+        """
+        DSTU2 errors with resource.create(). This function is the DSTU2 version of posting resources.
+
+        :param resource: FHIR resource object that is to be validated
+        :returns: json response
+        """
+        response = requests.post(f'https://api-v5-dstu2-test.hspconsortium.org/fpar2/open/{resource.resource_name}',data=json.dumps(resource.as_json()))
+        """
+        Other Servers:
+            - https://api-v5-dstu2-test.hspconsortium.org/fpar2/open/
+            - http://hapi.fhir.org/baseDstu2/
+        """
         return response.json()
 
     @staticmethod
@@ -224,7 +250,11 @@ class GenerateBase():
 
     @staticmethod
     def _generate_person():
+        """
+        Generates the attributes for a person FHIR object. Used in both Patient and Practitioner.
 
+        :returns: name_last, [name_first], gender
+        """
         name_first_dict = {}
         df = pd.read_excel('../demographic_files/common_name_first.xlsx')
         name_first_dict['male'] = df.men.tolist()
@@ -239,7 +269,6 @@ class GenerateBase():
         name_last = random.choice(name_last_list)
 
         return name_last, [name_first], gender
-
 
     def _add_quantity_value(self,Observation,measurement):
         """
@@ -261,7 +290,7 @@ class GenerateBase():
 
         :param Observation: fhirclient.models.observation.Observation object
         :param measurement: measurement dictionary
-        :returns: Observation Object
+        :returns: Observation FHIR object
         """
         CodeableConcept = cc.CodeableConcept()
         Coding = c.Coding()
@@ -273,6 +302,14 @@ class GenerateBase():
         return Observation
 
     def _add_value(self,Observation,measurement):
+        """
+        Adds values to an Observation FHIR object. Uses 'type' within dictionary to determine logic.
+
+        :param self:
+        :param Observation: Observation FHIR object.
+        :param measurement: Specific observation measurement. References a dictionary.
+        :returns: Observation FHIR object.
+        """
         if measurement['type'] == 'quantity':
             Observation.valueCodeableConcept = self._create_FHIRCodeableConcept(code=measurement['code'], system=measurement['system'], display=measurement['display'])
         elif measurement['type'] == 'codeable':
@@ -298,7 +335,6 @@ class GenerateBase():
         hr = avg_hr + diff
         return sbp, dbp, hr
 
-
     @staticmethod
     def _generate_height_weight(sex):
         """Generates height and weight roughly inline with US stats."""
@@ -314,7 +350,6 @@ class GenerateBase():
 
         if sex =='unknown':
             sex = random.choice(['male','female'])
-
         if sex == 'male':
             height = np.random.normal(avg_height_male,std_height_male)
             weight = np.random.normal(avg_weight_male,std_weight_male)
@@ -328,21 +363,12 @@ class GenerateBase():
     @staticmethod
     def _get_smoking_loinc():
         """Uses a get request from LOINC to obtain a list of smoking statuses and returns a random one."""
-        # df = pd.read_html('https://s.details.loinc.org/LOINC/72166-2.html?sections=Comprehensive')[5]
-        # df.columns = df.iloc[3,:]
-        # df = df.iloc[4:,[3,5]]
-        # df.columns = ['description','loinc']
-        # smoke_description = random.choice(df.description.tolist())
-        # smoke_loinc = df[df.description==smoke_description].loinc.values[0]
-        # return smoke_loinc, smoke_description
-
         df = pd.read_html('http://hl7.org/fhir/us/core/stu1/ValueSet-us-core-observation-ccdasmokingstatus.html')[1]
         headers = df.iloc[0,:2].tolist()
         df = df.iloc[1:,:2]
         df.columns = headers
         smoke_description = random.choice(df.Display.tolist())
         smoke_loinc = df[df.Display==smoke_description].Code.values[0]
-
         return smoke_loinc, smoke_description
 
     def _get_household_income(self):
@@ -359,7 +385,6 @@ class GenerateBase():
         df.columns = ['pregnancy_display','pregnancy_id']
         df.iloc[2,0] = 'Unknown'
         self.pregnancy_display = df[df.pregnancy_display == 'Not pregnant'].pregnancy_display.values[0]
-        #     pregnancy_display = random.choice(df.pregnancy_display.tolist())
         self.pregnancy_loinc = df[df.pregnancy_display == self.pregnancy_display].pregnancy_id.values[0]
 
     def _generate_gravidity_and_parity(self,patient):
@@ -373,7 +398,14 @@ class GenerateBase():
         else:
             self.parity = self.gravidity - random.choice(range(self.gravidity))
 
-    def _get_fpar_random_value(self,item_name):
+    @staticmethod
+    def _get_fpar_random_value(item_name):
+        """
+        Used in generating fpar observations. Hardcoded to look at valuesets within file and picks at random.
+
+        :param item_name: Observation name which is determined by listing in hardcoded file.
+        :returns: random value from valueset
+        """
         df = pd.read_excel('../demographic_files/valueset.xlsx',sheet_name='Sheet1')
         df = df.fillna('N/A')
         item_value = df[df.item == item_name].valueset.tolist()

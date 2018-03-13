@@ -81,6 +81,7 @@ class GenerateObservation(generatebase.GenerateBase):
             raise ValueError('observation_dict needs to be a dictionary of observations')
 
         for obs,value in self.observation_dict.items():
+            self.obs = obs
             Observation = o.Observation()
 
             Observation.code = self._create_FHIRCodeableConcept(code=value['code'], system=value['system'], display=value['display'])
@@ -95,7 +96,15 @@ class GenerateObservation(generatebase.GenerateBase):
             # self._validate(Observation)
             self.response = self.post_resource(Observation)
             Observation.id = self._extract_id()
-            print(f'{Observation.__class__.__name__}:{obs}; id: {Observation.id}')
+            self.Observation = Observation
+            print(self)
+
+    def __str__(self):
+        return f'{self.Observation.__class__.__name__}:{self.obs}; id: {self.Observation.id}'
+
+    @staticmethod
+    def __repr__():
+        return 'GenerateObservation()'
 
 if __name__ == '__main__':
     obs_dict = generateobservationdict.GenerateObservationDict()
