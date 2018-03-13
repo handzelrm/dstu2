@@ -95,6 +95,7 @@ class GenerateObservation(generatebase.GenerateBase):
             # self._validate(Observation)
             self.response = self.post_resource(Observation)
             Observation.id = self._extract_id()
+            print(f'{Observation.__class__.__name__}:{obs}; id: {Observation.id}')
 
 if __name__ == '__main__':
     obs_dict = generateobservationdict.GenerateObservationDict()

@@ -147,20 +147,23 @@ class GenerateBase():
         # print(resource)
         # returned = requests.post(f'http://api-v5-stu3.hspconsortium.org/stu3/open/{resource["resourceType"]}/$validate', data=json.dumps(resource))
         # print(returned.text)
-        print(resource.resource_type)
+        # print(resource.resource_name)
         # print(resource.as_json())
 
-        returned = requests.post(f'https://api-v5-stu3.hspconsortium.org/stu3/open/{resource.resource_type}/$validate', data=json.dumps(resource.as_json()))
+        # returned = requests.post(f'https://api-v5-stu3.hspconsortium.org/stu3/open/{resource.resource_name}/$validate', data=json.dumps(resource.as_json()))
+        returned = requests.post(f'http://hapi.fhir.org/baseDstu2/{resource.resource_name}/$validate', data=json.dumps(resource.as_json()))
+        # returned = requests.post(f'https://api-v5-dstu2-test.hspconsortium.org/fpar2/open/{resource.resource_name}/$validate', data=json.dumps(resource.as_json()))
         print(returned)
         # print(type(returned))
-        # print(type(returned.text))
-        print(returned.ok)
+        print(returned.text)
+        # print(returned.ok)
+        print(resource.resource_name)
         for issue in returned.json()['issue']:
             print(issue['diagnostics'])
         # print(returned.text)
 
     def post_resource(self,resource):
-        response = requests.post(f'https://api-v5-dstu2-test.hspconsortium.org/fpar2/open/{resource.resource_name}',data=json.dumps(resource.as_json()))
+        response = requests.post(f'http://hapi.fhir.org/baseDstu2/{resource.resource_name}',data=json.dumps(resource.as_json()))
         return response.json()
 
     @staticmethod

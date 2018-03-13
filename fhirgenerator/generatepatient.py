@@ -19,8 +19,8 @@ import requests
 import json
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-import sys, os
-print(os.path.dirname(sys.executable))
+# import sys, os
+# print(os.path.dirname(sys.executable))
 
 class GeneratePatient(generatebase.GenerateBase):
     def __init__(self):
@@ -135,7 +135,8 @@ class GeneratePatient(generatebase.GenerateBase):
         Patient.active = True
         Patient.address = [Address]
         PatientCommunication = p.PatientCommunication()
-        PatientCommunication.language = self._create_FHIRCodeableConcept('en-US','http://hl7.org/fhir/ValueSet/languages','English')
+        PatientCommunication.language = self._create_FHIRCodeableConcept('en-US','urn:ietf:bcp:47','English')
+        # PatientCommunication.language = self._create_FHIRCodeableConcept('en-US','http://hl7.org/fhir/ValueSet/languages','English')
         PatientCommunication.preferred = True
         Patient.communication = [PatientCommunication]
 
@@ -165,9 +166,11 @@ class GeneratePatient(generatebase.GenerateBase):
 
         Patient.extension = [race,ethnicity]
 
+        self._validate(Patient)
         self.response = self.post_resource(Patient)
         Patient.id = self._extract_id()
-        print(f'Name:{self.name_last},{self.name_first}; id:{Patient.id}')
+        # print(f'Name:{self.name_last},{self.name_first}; id:{Patient.id}')
+        print(f'{Patient.__class__.__name__}:{self.name_last},{self.name_first}; id: {Patient.id}')
         self.Patient = Patient
 
 if __name__ == '__main__':

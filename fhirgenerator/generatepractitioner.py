@@ -32,10 +32,11 @@ class GeneratePractitioner(generatebase.GenerateBase):
         name.given = [given]
         Practitioner.name = name
 
-        # self._validate(Practitioner)
+        self._validate(Practitioner)
         self.response = self.post_resource(Practitioner)
         Practitioner.id = self._extract_id()
         self.Practitioner = Practitioner
+        print(f'{Practitioner.__class__.__name__}:{name.family[0]},{name.given[0][0]}; id: {Practitioner.id}')
 
 if __name__ == '__main__':
 	GeneratePractitioner()
