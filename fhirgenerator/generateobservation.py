@@ -16,9 +16,16 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 class GenerateObservation(generatebase.GenerateBase):
 
-
     def __init__(self,observation_dict,dt=datetime.datetime.now(),Patient=None, Practitioner=None):
-        """Uses fhirclient.models to create and send vitals to server."""
+        """
+        Creates, validates, and posts an Observation FHIR _generate_patient_fhir_object.
+
+        :param observation_dict: dictionary of observations
+        :param dt: datetime of observation. Default is now.
+        :param Patient: Patient FHIR object.
+        :param Practitioner: Practioner FHIR object.
+        :returns: GenerateObservation object that has Observation as an attribute.
+        """
         self.dt = dt
 
         if Patient is None:
@@ -91,9 +98,8 @@ class GenerateObservation(generatebase.GenerateBase):
 
             Observation = self._add_value(Observation,value)
             Observation.effectiveDateTime = self._create_FHIRDate(self.dt)
-            # Observation.context = self._create_FHIRReference(self.Encounter)
 
-            # self._validate(Observation)
+            self._validate(Observation)
             self.response = self.post_resource(Observation)
             Observation.id = self._extract_id()
             self.Observation = Observation

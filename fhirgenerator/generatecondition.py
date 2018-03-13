@@ -12,8 +12,12 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 class GenerateCondition(generatebase.GenerateBase):
-
     def __init__(self, Patient=None):
+        """
+        Uses fhirclient.models to create, validate, and post a Condition FHIR resource.
+
+        :returns: GenerateCondition object which has Condition object as an attribute.
+        """
 
         if Patient == None:
             self.Patient = generatepatient.GeneratePatient().Patient
@@ -23,7 +27,6 @@ class GenerateCondition(generatebase.GenerateBase):
         self._generate_icd_code()
 
         Condition = cond.Condition()
-        # Condition.clinicalStatus = 'active'
         Condition.verificationStatus = 'active'
         CodeableConcept = cc.CodeableConcept()
         Coding = c.Coding()
@@ -31,18 +34,13 @@ class GenerateCondition(generatebase.GenerateBase):
         Coding.display = self.icd_description
         CodeableConcept.coding = [Coding]
         Condition.code = CodeableConcept
-
-
-        # Patient_FHIRReference = fr.FHIRReference()
-        # Patient_FHIRReference.reference = f'Patient/{self.Patient.id}'
         Condition.patient = self._create_FHIRReference(self.Patient)
 
-        # self._validate(Condition)
+        self._validate(Condition)
         self.response = self.post_resource(Condition)
         Condition.id = self._extract_id()
         self.Condition = Condition
         self.Condition.Patient = self.Patient
-        print(f'{Condition.__class__.__name__}:{self.icd_description}; id: {Condition.id}')
         print(self)
 
     def __str__(self):
@@ -53,13 +51,13 @@ class GenerateCondition(generatebase.GenerateBase):
         return 'GenerateCondition()'
 
     def _generate_icd_code(self):
+        """Generates an icd code at random from a hardcoded file."""
         df = pd.read_excel('../demographic_files/common_obgyn_visits_parsed.xlsx',sheet_name='for OPA')
         icd_list = []
         for row in df.iterrows():
             icd_list += row[1][0]*[row[1][1]]
         self.icd_code = random.choice(icd_list)
         self.icd_description = df[df.code==self.icd_code].description.values[0]
-
 
 if __name__ == '__main__':
 	GenerateCondition()

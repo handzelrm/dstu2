@@ -11,6 +11,7 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 class GenerateFparLabs(generatebase.GenerateBase):
 
     def __init__(self):
+        """Obtains valuesets for FPAR labs from the HSPC server. Contains logic to pick one of each lab. Generates lab/observation dictionary."""
         self.hiv = labvaluesets.LabValueSets('ValueSet','FPARHIVTests')
         self.ct_gc = labvaluesets.LabValueSets('ValueSet','FPARchlamydiaTrachomatisAndNeisseriaGonorrhoeaeCombinedTests')
         self.ct = labvaluesets.LabValueSets('ValueSet','FPARchlamydiaTrachomatisTests')
@@ -20,7 +21,6 @@ class GenerateFparLabs(generatebase.GenerateBase):
         self.preg = labvaluesets.LabValueSets('ValueSet','FPARpregnancyTests')
 
         self._generate_lab_df()
-
         self.lab_dict = {}
         self.lab_dict['hiv'] = self._generate_lab_dict(self.hiv)
         separate_or_combined = random.choice(['separate','combined'])
@@ -57,6 +57,13 @@ class GenerateFparLabs(generatebase.GenerateBase):
         self.lab_df = df
 
     def _generate_lab_dict(self,lab):
+        """
+        Generates a lab dictionary that will be used in GenerateObservation module.
+
+        :param self:
+        :param lab: lab of interest
+        :returns: lab_dict
+        """
         lab_loinc = random.choice(lab.LoincSet)
         lab_value_list = self.lab_df[self.lab_df.loinc==lab_loinc].value.values
         lab_name_list = self.lab_df[self.lab_df.loinc==lab_loinc].lab_name.values
@@ -68,7 +75,6 @@ class GenerateFparLabs(generatebase.GenerateBase):
 
         lab_dict = {'system':'http://loinc.org','type':'valuestring','code':lab_loinc,'display':lab_name,'unit':None,'value':lab_value}
         return lab_dict
-
 
 if __name__ == '__main__':
     GenerateFparLabs()

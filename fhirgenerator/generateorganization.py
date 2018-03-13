@@ -6,17 +6,19 @@ import os
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 class GenerateOrganization(generatebase.GenerateBase):
-
     organization_name = 'UPMC Magee Clinic'
     organization_phone = '(123) 456-7890'
     organization_line = ["Magee-Women's Hospital of UPMC, Halket Street"]
     organization_city = 'Pittsburgh'
     organization_postalCode = '15213'
     organization_state = 'PA'
-    # organization_longitude = -79.960779
-    # organization_latitude = 40.437123
 
     def __init__(self):
+    """
+    Creates, validates, and posts an Organization FHIR resource. Currently, using class variables.
+
+    :returns: practitioner id created by server
+    """
         Organization = org.Organization()
         Organization.active = True
         Organization.name = self.organization_name

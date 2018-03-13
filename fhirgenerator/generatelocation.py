@@ -7,7 +7,6 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 class GenerateLocation(generatebase.GenerateBase):
-
     location_status = 'active'
     location_name = 'UPMC Magee Clinic'
     location_line = ["Magee-Women's Hospital of UPMC, Halket Street"]
@@ -17,13 +16,11 @@ class GenerateLocation(generatebase.GenerateBase):
     location_longitude = -79.960779
     location_latitude = 40.437123
 
-
     def __init__(self):
         """
         Uses fhirclient.models to create and post location resource. Currently, using class variables.
 
-        :param smart: fhirclient.client.FHIRClient object.
-        :returns: practitioner id created by server
+        :returns: GenerateLocation object that has Location object as an attribute.
         """
         Location = l.Location()
         LocationPosition = l.LocationPosition()
