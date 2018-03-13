@@ -387,7 +387,7 @@ class GenerateBase():
         Uses a get request from LOINC to obtain a list of smoking statuses and returns a random one.
 
         :returns: smoke_loinc, smoke_description
-        """        
+        """
         df = pd.read_html('http://hl7.org/fhir/us/core/stu1/ValueSet-us-core-observation-ccdasmokingstatus.html')[1]
         headers = df.iloc[0,:2].tolist()
         df = df.iloc[1:,:2]
@@ -397,6 +397,7 @@ class GenerateBase():
         return smoke_loinc, smoke_description
 
     def _get_household_income(self):
+        """Requests values of household income and selects one at random."""
         df = pd.read_html('https://r.details.loinc.org/LOINC/77244-2.html?sections=Comprehensive')[4]
         df = df.iloc[4:,[3,5]]
         df.columns = ['income_range','answer_id']
