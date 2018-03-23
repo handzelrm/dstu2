@@ -178,14 +178,14 @@ class GenerateBase():
         :param resource: FHIR resource to be validated.
         :returns: None
         """
-        returned = requests.post(f'https://api-v5-dstu2-test.hspconsortium.org/fpar2/open/{resource.resource_name}/$validate', data=json.dumps(resource.as_json()))
+        returned = requests.post(f'https://api-v5-dstu2.hspconsortium.org/fpardstu2/open/{resource.resource_name}/$validate', data=json.dumps(resource.as_json()))
         """
         Other Servers:
             - https://api-v5-dstu2-test.hspconsortium.org/fpar2/open/
             - http://hapi.fhir.org/baseDstu2/
+            - https://api-v5-dstu2.hspconsortium.org/fpardstu2/open/
         """
-        print(returned.text)
-        print(resource.resource_name)
+        # print(returned.text)
         for issue in returned.json()['issue']:
             print(issue['diagnostics'])
 
@@ -197,11 +197,12 @@ class GenerateBase():
         :param resource: FHIR resource object that is to be validated
         :returns: json response
         """
-        response = requests.post(f'https://api-v5-dstu2-test.hspconsortium.org/fpar2/open/{resource.resource_name}',data=json.dumps(resource.as_json()))
+        response = requests.post(f'https://api-v5-dstu2.hspconsortium.org/fpardstu2/open/{resource.resource_name}',data=json.dumps(resource.as_json()))
         """
         Other Servers:
             - https://api-v5-dstu2-test.hspconsortium.org/fpar2/open/
             - http://hapi.fhir.org/baseDstu2/
+            - https://api-v5-dstu2.hspconsortium.org/fpardstu2/open/
         """
         return response.json()
 

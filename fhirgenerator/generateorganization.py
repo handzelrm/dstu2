@@ -14,11 +14,11 @@ class GenerateOrganization(generatebase.GenerateBase):
     organization_state = 'PA'
 
     def __init__(self):
-    """
-    Creates, validates, and posts an Organization FHIR resource. Currently, using class variables.
+        """
+        Creates, validates, and posts an Organization FHIR resource. Currently, using class variables.
 
-    :returns: practitioner id created by server
-    """
+        :returns: practitioner id created by server
+        """
         Organization = org.Organization()
         Organization.active = True
         Organization.name = self.organization_name

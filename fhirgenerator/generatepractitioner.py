@@ -1,4 +1,5 @@
 import generatebase
+import generateorganization
 import fhirclient.models.codeableconcept as cc
 import fhirclient.models.coding as c
 import fhirclient.models.humanname as hn
@@ -8,13 +9,18 @@ import os
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 class GeneratePractitioner(generatebase.GenerateBase):
-    def __init__(self):
+    def __init__(self,Organization=None):
         """
         Uses fhirclient.models to create and post practitoner resource. Currently, using class variables.
 
         :param smart: fhirclient.client.FHIRClient object.
         :returns: practitioner id created by server
         """
+        if Organization is None:
+            self.Organization = generateorganization.GenerateOrganization().Organization
+        else:
+            self.Organization = Organization
+
         Practitioner = pr.Practitioner()
         PractitionerQualification = pr.PractitionerQualification()
         CodeableConcept = cc.CodeableConcept()
@@ -29,7 +35,6 @@ class GeneratePractitioner(generatebase.GenerateBase):
         name.family = [self.family]
         name.given = [self.given]
         Practitioner.name = name
-
         self._validate(Practitioner)
         self.response = self.post_resource(Practitioner)
         Practitioner.id = self._extract_id()
@@ -37,7 +42,7 @@ class GeneratePractitioner(generatebase.GenerateBase):
         print(self)
 
     def __str__(self):
-        return f'{self.Practitioner.__class__.__name__}:{self.family},{self.given}; id: {self.Practitioner.id}'
+        return f'{self.Practitioner.__class__.__name__}:{self.family},{self.given[0]}; id: {self.Practitioner.id}'
 
     @staticmethod
     def __repr__():
