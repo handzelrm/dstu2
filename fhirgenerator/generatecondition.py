@@ -30,7 +30,7 @@ class GenerateCondition(generatebase.GenerateBase):
         Condition.clinicalStatus = 'active'
         Condition.verificationStatus = 'confirmed'
         # Condition.verificationStatus = 'active'
-        Condition.category = self._create_FHIRCodeableConcept(code='problem', system='urn:oid:2.16.840.1.113883.4.642.3.153', display='Problem List Item')
+        # Condition.category = self._create_FHIRCodeableConcept(code='problem', system='urn:oid:2.16.840.1.113883.4.642.3.153', display='Problem List Item')
 
         Condition.code = self._create_FHIRCodeableConcept(code=self.icd_code,system='urn:oid:2.16.840.1.113883.6.3',display=self.icd_description)
         Condition.patient = self._create_FHIRReference(self.Patient)

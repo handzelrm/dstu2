@@ -178,12 +178,13 @@ class GenerateBase():
         :param resource: FHIR resource to be validated.
         :returns: None
         """
-        returned = requests.post(f'https://api-v5-dstu2.hspconsortium.org/fpardstu2/open/{resource.resource_name}/$validate', data=json.dumps(resource.as_json()))
+        returned = requests.post(f'http://hapi.fhir.org/baseDstu2/{resource.resource_name}/$validate?profile=http://fhir.org/guideasdfasdfs/argonaut/StructureDefinition/argo-condition', data=json.dumps(resource.as_json()))
         """
         Other Servers:
             - https://api-v5-dstu2-test.hspconsortium.org/fpar2/open/
             - http://hapi.fhir.org/baseDstu2/
             - https://api-v5-dstu2.hspconsortium.org/fpardstu2/open/
+            - http://hapi.fhir.org/baseDstu2
         """
         # print(returned.text)
         for issue in returned.json()['issue']:
