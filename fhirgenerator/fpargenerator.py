@@ -28,7 +28,7 @@ def main():
     args = parser.parse_args()
     for i in range(int(args.number)):
         FparGenerator()
-
+        print(f'\n--- FINISHED {i+1} of {args.number} ---\n')
 
 if __name__ == '__main__':
     main()
