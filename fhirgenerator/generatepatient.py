@@ -37,6 +37,7 @@ class GeneratePatient(generatebase.GenerateBase):
             self.name_first = random.choice(name_first_dict[random.choice(['male','female'])])
         else:
             self.name_first = random.choice(name_first_dict[self.gender])
+        self.name_first = self.name_first.upper()
         self.name_last = random.choice(name_last_list)
         self.bday = self._generate_bday()
         self.address_number = random.randint(1,9999)
