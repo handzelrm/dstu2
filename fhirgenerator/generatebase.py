@@ -187,8 +187,8 @@ class GenerateBase():
             - http://hapi.fhir.org/baseDstu2
         """
         # print(returned.text)
-        for issue in returned.json()['issue']:
-            print(issue['diagnostics'])
+        # for issue in returned.json()['issue']:
+        #     print(issue['diagnostics'])
 
     @staticmethod
     def post_resource(resource):
@@ -207,6 +207,7 @@ class GenerateBase():
             - https://api-v5-dstu2.hspconsortium.org/opafpardev/open/
             - https://api-v5-dstu2.hspconsortium.org/FPARPatients/open/
             - https://api-v5-dstu2.hspconsortium.org/fparTEST/open/
+            - https://api-v5-dstu2.hspconsortium.org/opafpardev/open/
 
         """
         return response.json()
